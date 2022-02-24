@@ -131,13 +131,11 @@ void setSegmentsFormatTemperature(int num) {
 
 void printTemperature(DeviceAddress deviceAddress)
 {
-  //косяк с отображением температуры от -1 до 0 и от 0 +1 надо исправить
   int tempC = sensors.getTempC(deviceAddress) *10; //Домножаем на 10, чтобы не потерять дробную часть
   if(tempC == DEVICE_DISCONNECTED_C){
     display.setSegments(SEG_ERR);
     return;
   }
-  //display.showNumberDecEx(tempC, (0x80 >> 2), false); //и ставим точку на предпоследнем разряде.
   setSegmentsFormatTemperature((int) tempC);
 }//Таким образом получаем точность в пределах погрешности датчика
 
