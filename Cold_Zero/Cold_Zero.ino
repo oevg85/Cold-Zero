@@ -44,19 +44,105 @@ void setup(void)
   sensors.setResolution(insideThermometer, 9); 
 }
 
+void setSegmentsFormatTemperature(int num) {
+  uint8_t data[] = {0x00, 0x00, 0x00, 0x00};
+  if (num < 0 & abs(num) > 100){
+    data[0] = 0x40;
+    num = abs(num);
+    for (int i = 3; i >= 1; --i) {
+    uint8_t digit = num % 10;
+
+    if (digit == 0 && num == 0)
+    data[i] = 0x3f;
+    else
+    data[i] = display.encodeDigit(digit);
+    if (i == 2){
+      data[i] = display.encodeDigit(digit) + 0x80;
+    }
+    num /= 10;
+    }    
+  }else if(num < 0 &abs(num) > 1){
+    data[0] = 0x40;
+    data[3] = 0x63;
+    num = abs(num);
+    for (int i = 2; i >= 1; --i) {
+    uint8_t digit = num % 10;
+
+    if (digit == 0 && num == 0)
+    data[i] = 0x3f;
+    else
+    data[i] = display.encodeDigit(digit);
+    if (i == 1){
+      data[i] = display.encodeDigit(digit) + 0x80;
+    }
+    num /= 10;    
+  }
+  
+  }else if(num > 0 & num > 100){
+    data[3] = 0x63;
+    num = abs(num);
+    for (int i = 2; i >= 0; --i) {
+    uint8_t digit = num % 10;
+
+    if (digit == 0 && num == 0)
+    data[i] = 0x3f;
+    else
+    data[i] = display.encodeDigit(digit);
+    if (i == 1){
+      data[i] = display.encodeDigit(digit) + 0x80;
+    }
+    num /= 10;    
+  }
+  }else if(num > 0 & num > 10){
+    data[0] = 0x00;
+    data[3] = 0x63;
+    num = abs(num);
+    for (int i = 2; i >= 1; --i) {
+    uint8_t digit = num % 10;
+
+    if (digit == 0 && num == 0)
+    data[i] = 0x00;
+    else
+    data[i] = display.encodeDigit(digit);
+    if (i == 1){
+      data[i] = display.encodeDigit(digit) + 0x80;
+    }
+    num /= 10;    
+    }
+  }else{
+    data[0] = 0x00;
+    data[3] = 0x63;
+    num = abs(num);
+    for (int i = 2; i >= 1; --i) {
+    uint8_t digit = num % 10;
+
+    if (digit == 0 && num == 0)
+    data[i] = 0x3f;
+    else
+    data[i] = display.encodeDigit(digit);
+    if (i == 1){
+      data[i] = display.encodeDigit(digit) + 0x80;
+    }
+    num /= 10;    
+    }
+  }
+  display.setSegments(data);
+}
+
 void printTemperature(DeviceAddress deviceAddress)
 {
   //косяк с отображением температуры от -1 до 0 и от 0 +1 надо исправить
-  uint16_t tempC = sensors.getTempC(deviceAddress)*10; //Домножаем на 10, чтобы не потерять дробную часть
+  int tempC = sensors.getTempC(deviceAddress) *10; //Домножаем на 10, чтобы не потерять дробную часть
   if(tempC == DEVICE_DISCONNECTED_C){
     display.setSegments(SEG_ERR);
     return;
   }
-  display.showNumberDecEx(tempC, (0x80 >> 2), false); //и ставим точку на предпоследнем разряде.
+  //display.showNumberDecEx(tempC, (0x80 >> 2), false); //и ставим точку на предпоследнем разряде.
+  setSegmentsFormatTemperature((int) tempC);
 }//Таким образом получаем точность в пределах погрешности датчика
 
 void loop(void)
 { 
   sensors.requestTemperatures();
-  printTemperature(insideThermometer); 
+  printTemperature(insideThermometer);
 }
