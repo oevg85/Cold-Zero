@@ -46,7 +46,7 @@ void setup(void)
 
 void setSegmentsFormatTemperature(int num) {
   uint8_t data[] = {0x00, 0x00, 0x00, 0x00};
-  if (num < 0 & abs(num) > 100){
+  if (num < 0 & abs(num) > 99){
     data[0] = 0x40;
     num = abs(num);
     for (int i = 3; i >= 1; --i) {
@@ -61,7 +61,7 @@ void setSegmentsFormatTemperature(int num) {
     }
     num /= 10;
     }    
-  }else if(num < 0 &abs(num) > 1){
+  }else if(num < 0 &abs(num) > 0){
     data[0] = 0x40;
     data[3] = 0x63;
     num = abs(num);
@@ -78,7 +78,7 @@ void setSegmentsFormatTemperature(int num) {
     num /= 10;    
   }
   
-  }else if(num > 0 & num > 100){
+  }else if(num > 0 & num > 99){
     data[3] = 0x63;
     num = abs(num);
     for (int i = 2; i >= 0; --i) {
@@ -93,7 +93,7 @@ void setSegmentsFormatTemperature(int num) {
     }
     num /= 10;    
   }
-  }else if(num > 0 & num > 10){
+  }else if(num > 0 & num > 9){
     data[0] = 0x00;
     data[3] = 0x63;
     num = abs(num);
